@@ -185,18 +185,20 @@ def train_model(model, train_loader, val_loader, loss_func, optimizer, epochs, a
                 total_val_loss += val_loss.item()
         #
         val_loss = total_val_loss / len(val_loader)
-        print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}, Elapsed Time: {elapsed_time}')
+        if args.verbose:
+            print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}, Elapsed Time: {elapsed_time}')
 
         # Check for early stopping
         early_stopping(val_loss, model)
 
         # if we want to early stop
         if early_stopping.early_stop and args.ann_early_stop:
-            print(f"Early stopping triggered at epoch {epoch+1}.")
+            if args.verbos:
+                print(f"Early stopping triggered at epoch {epoch+1}.")
             break
 
     # load the last checkpoint (with the best model if early stop)
-    model.load_state_dict(torch.load(checkpoint_path))
+    model.load_state_dict(torch.load(checkpoint_path, weights_only=True))
     return model
 
 

@@ -214,7 +214,7 @@ def mdl_pred(distance_x, distance_y, target, train_idx, anchors_idx, test_idx, v
         val_loader = DataLoader(TensorDataset(X_val, Y_val), batch_size=batch_size)
 
         # Instantiate the model, define the loss function and the optimizer
-        mdl = ANN_Model(input_size, hidden_size, output_size, args)
+        mdl = ANN_Model(input_size, hidden_size, output_size, args).to(device)
         loss_func = nn.MSELoss()
         optimizer = optim.Adam(mdl.parameters(), lr=learning_rate)
         scheduler = StepLR(optimizer, step_size=10, gamma=0.95)
