@@ -1,16 +1,18 @@
 # Extended Topological Regression
 
 ## Introduction
-This is the Python package of an extended version of Topological Regression (TR), a similarity-based regression framework, that is statistically grounded, computationally fast, and interpretable. This package offers flexible options for descriptor calculation, distance calculation, anchor point selection, and model configuration, allowing users to fine-tune the method to their specific research needs. For more information, please see
+This is the Python package of an extended version of Topological Regression (TR), a similarity-based regression framework that is statistically grounded, computationally fast, and interpretable. This package offers flexible options for descriptor calculation, distance calculation, anchor point selection, and model configuration, allowing users to fine-tune the method to their specific research needs. For more information, please see
 1. Zhang, Ruibo, et al. "Topological regression as an interpretable and efficient tool for quantitative structure-activity relationship modeling." Nature Communications 15.1 (2024): 5072. 
 
 ## Installation
-**Step 1: Creat a conda environment (optional)**
+**Step 1: Create a conda environment (optional)**
 ```bash
 conda create --name extendtr python=3.8
 conda activate extendtr
 ```
+
 **Step 2: Install the extendtr package**
+
 Clone the github repo:
 ```bash
 git clone git@github.com:yixmao/extend_tr.git
@@ -18,8 +20,11 @@ cd extend_tr
 ```
 Install the package
 ```bash
+python setup.py sdist bdist_wheel
 pip install .
 ```
+If an error occurs indicating that there is no module named `setuptools` or `wheel`, you can install them by `pip install setuptools wheel`.
+
 **Step 3: Verify installation**
 ```bash
 python tr_examples.py
@@ -74,9 +79,11 @@ NRMSE: 0.32236196650979265
 ```
 
 ## Example usage
-Detailed example usage of different TR configurations can be found in `tr_examples.ipynb`. Here, we go through a simply example that runs ensemble TR on the CHEMBL dataset 278.
+Detailed example usage of different TR configurations can be found in `tr_examples.ipynb`. Here, we go through a simple example that runs ensemble TR on the CHEMBL dataset 278.
+
 **Step 1: Prepare the data**
-To use TR functions, first we need to prepare the data, including the descriptors, targets, train and test indices and validation indices (optional). Note that the descriptors and targets need to be ```pdDataFrame```, and the indices need to be ```list```.
+
+To use TR functions, first we need to prepare the data, including the descriptors, targets, train and test indices and validation indices (optional). Note that the descriptors and targets need to be ```pd.DataFrame```, and the indices need to be ```list```.
 ```python
 import pandas as pd
 # load the descriptor - the indices of desc will be used later
@@ -95,7 +102,7 @@ Then, we define the indices for training, test and validation (option) samples.
 ```python
 import json
 from sklearn.model_selection import train_test_split
-# load indicies for scaffold split
+# load indices for scaffold split
 with open(f'./SampleDatasets/CHEMBL278/scaffold_split_index.json', 'r') as f:
     index = json.load(f)  
 train_idx = index['train_idx']
@@ -104,7 +111,7 @@ test_idx = index['test_idx']
 train_idx = [idx for idx in train_idx if idx in target.index]
 test_idx = [idx for idx in test_idx if idx in target.index]
 
-##### alternatively, you can ranomly split train and test idx
+##### alternatively, you can randomly split train and test idx
 # dataset_idx = target.index.tolist()
 # train_idx, test_idx = train_test_split(dataset_idx, test_size=0.2, random_state=args.seed)
 
@@ -117,6 +124,7 @@ else: # no validation
 ```
 
 **Step 2: Model and predict**
+
 Set the arguments and random seed. You can use ```args = TopoRegArgs()``` to receive command-line input.
 ```python
 from extendtr.utils.args import TopoRegArgs
@@ -133,6 +141,7 @@ from extendtr.TR.topoReg import TopoReg
 mdl, pred_test, pred_val, train_time, test_time = TopoReg(desc, target, train_idx, test_idx, val_idx, args)
 ```
 **Step 3: Evaluate the predictions**
+
 We provide a simple function that can calculate Spearman's correlation, R2, root mean square error (RMSE) and normalized RMSE (NRMSE)
 ```python
 from extendtr.utils.utils import metric_calc
@@ -176,3 +185,7 @@ Table below shows the parameters and their possible values and descriptions.
 | `-ann_early_stop`      | `True`, `False`                        | `True`        | Enable early stopping for ANN.                                              |
 | `-ann_patience`        | Integer                                | `3`           | Number of steps to wait before stopping ANN training.                       |
 | `-ann_min_delta`       | Float                                  | `1e-3`        | Minimum change in NRMSE to qualify as an improvement for early stopping.    |
+
+
+### Contact
+If you have any questions or suggestions, please feel free to contact: Yixiang Mao (yixmao@ttu.edu) and Dr. Ranadip Pal (ranadip.pal@ttu.edu).
