@@ -2,12 +2,13 @@ import time
 import numpy as np
 import pandas as pd
 import os
+import warnings
 # 
 from sklearn.metrics import pairwise_distances
 from sklearn.linear_model import LinearRegression as LR
 from sklearn.linear_model import Lasso
 from sklearn.ensemble import RandomForestRegressor as RF
-from sklearn.model_selection import train_test_split
+from sklearn.exceptions import ConvergenceWarning
 #
 import torch
 import torch.nn as nn
@@ -15,10 +16,10 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import DataLoader, TensorDataset
 #
-from utils.utils import rbf, check_and_remove_duplicates, normalize_data
-from utils.ann_model import ANN_Model, train_model
-from TR.distance import calculate_distances
-from TR.anchor_selection import select_anchor
+from extendtr.utils.utils import rbf, check_and_remove_duplicates, normalize_data
+from extendtr.utils.ann_model import ANN_Model, train_model
+from extendtr.TR.distance import calculate_distances
+from extendtr.TR.anchor_selection import select_anchor
 
 
 
@@ -54,7 +55,7 @@ def TopoReg(desc, target, train_idx, test_idx, val_idx, args):
     distance_y = pd.DataFrame(distance_y, index=target.index, columns=target.index)
     # check and remove duplicates in the training samples
     if args.check_duplicates:
-        train_idx = check_and_remove_duplicates(distance_x, train_idx)
+        train_idx = check_and_remove_duplicates(distance_x, train_idx, args.verbose)
     # 
     if args.ensemble: # ensemble TR
         mdl, pred_test, pred_val, train_time, test_time = ensemble_TR(distance_x, distance_y, target, train_idx, test_idx, val_idx, args)
@@ -164,6 +165,7 @@ def mdl_pred(distance_x, distance_y, target, train_idx, anchors_idx, test_idx, v
         elif args.model == 'RF':
             mdl = RF(n_jobs=-1)
 
+        warnings.filterwarnings("ignore", category=ConvergenceWarning)
         mdl.fit(dist_x_train, dist_y_train)
         # make predictions for validation set
         if val_idx is not None:

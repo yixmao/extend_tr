@@ -8,9 +8,9 @@ setup(
     long_description_content_type='text/markdown',
     author='Yixiang Mao',
     author_email='yixmao@ttu.edu',
-    url='https://github.com/yourusername/your_package_name',  # Project URL
+    url='https://github.com/yixmao/extend_tr',
     license='MIT',            
-    packages=find_packages(),
+    packages=find_packages(include=['extendtr', 'extendtr.*']),
     install_requires=[
         'numpy',
         'scipy',
@@ -18,7 +18,7 @@ setup(
         'scikit-learn',
         'fastparquet',
         'rdkit',
-        'tensorflow'
+        'torch'
     ],
     classifiers=[
         'Programming Language :: Python :: 3',

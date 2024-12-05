@@ -5,7 +5,6 @@ import torch
 import random
 from scipy.stats import spearmanr
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression as LR
 
 def set_seed(seed):
@@ -102,7 +101,7 @@ def stack_models(preds_val, preds_test, target, val_idx):
     return pred_test, train_time, test_time
 
 
-def check_and_remove_duplicates(distance_x, train_idx):
+def check_and_remove_duplicates(distance_x, train_idx, verbose):
     """
     Checks for duplicate samples in the training set based on zero distances 
     and removes them if duplicates are found.
@@ -122,13 +121,15 @@ def check_and_remove_duplicates(distance_x, train_idx):
     zeros_count_per_column = np.sum(dist_array == 0, axis=0)
     # Check for columns with more than one zero
     if any(zeros_count_per_column > 1):
-        print("Duplicates detected, removing...")
-        return remove_duplicate_samples(distance_x, train_idx)
+        if verbose:
+            print("Duplicates detected, removing...")
+        return remove_duplicate_samples(distance_x, train_idx, verbose)
     else:
-        print("No duplicates detected.")
+        if verbose:
+            print("No duplicates detected.")
         return train_idx
     
-def remove_duplicate_samples(distance_x, train_idx):
+def remove_duplicate_samples(distance_x, train_idx, verbose):
     """
     Removes duplicate samples from the training set by identifying columns in the 
     distance matrix with zero distances to multiple rows.
@@ -161,7 +162,8 @@ def remove_duplicate_samples(distance_x, train_idx):
     unique_indices = set(train_idx) - duplicate_indices
     #   
     num_removed = len(duplicate_indices)
-    print(f"Number of duplicate samples removed: {num_removed}")
+    if verbose:
+        print(f"Number of duplicate samples removed: {num_removed}")
     # print(duplicate_indices)
     # The result is already in the form of original indices from train_idx
     filtered_train_idx = list(unique_indices)
